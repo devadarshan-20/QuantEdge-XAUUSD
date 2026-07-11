@@ -19,7 +19,7 @@ st.set_page_config(
 # SECURE API KEY
 # =========================
 
-API_KEY = st.secrets["28341964de8d4340aa7601b9aa76b5ae"]
+API_KEY = st.secrets["TWELVE_DATA_API_KEY"]
 
 td = TDClient(apikey=API_KEY)
 
