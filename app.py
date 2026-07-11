@@ -8,11 +8,11 @@ from zoneinfo import ZoneInfo
 
 
 # ============================================================
-# PAGE CONFIGURATION
+# PAGE CONFIG
 # ============================================================
 
 st.set_page_config(
-    page_title="QuantEdge",
+    page_title="QuantEdge AI",
     page_icon="📈",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -28,7 +28,7 @@ st.markdown(
 <style>
 
 .stApp {
-    background-color: #0d0f12;
+    background: #0d0f12;
 }
 
 .main .block-container {
@@ -38,7 +38,7 @@ st.markdown(
 }
 
 [data-testid="stSidebar"] {
-    background-color: #080a0c;
+    background: #080a0c;
     border-right: 1px solid #25282d;
 }
 
@@ -110,7 +110,7 @@ footer {
 }
 
 .signal-card {
-    background-color: #15181c;
+    background: #15181c;
     border: 1px solid #292d33;
     border-radius: 16px;
     padding: 22px;
@@ -153,7 +153,7 @@ footer {
 }
 
 .market-message {
-    background-color: #14171b;
+    background: #14171b;
     border: 1px solid #292d33;
     border-radius: 13px;
     padding: 18px;
@@ -163,7 +163,7 @@ footer {
 }
 
 .level-card {
-    background-color: #13161a;
+    background: #13161a;
     border: 1px solid #292d33;
     border-radius: 12px;
     padding: 16px;
@@ -185,7 +185,7 @@ footer {
 }
 
 .reason-card {
-    background-color: #121519;
+    background: #121519;
     border-left: 3px solid #4da3ff;
     padding: 13px 15px;
     margin: 8px 0;
@@ -194,20 +194,20 @@ footer {
     font-size: 14px;
 }
 
-.status-active {
+.market-active {
     display: inline-block;
     color: #4ade80;
-    background-color: rgba(34, 197, 94, 0.10);
+    background: rgba(34, 197, 94, 0.10);
     border: 1px solid rgba(34, 197, 94, 0.25);
     border-radius: 20px;
     padding: 5px 10px;
     font-size: 11px;
 }
 
-.status-closed {
+.market-closed {
     display: inline-block;
     color: #f87171;
-    background-color: rgba(239, 68, 68, 0.10);
+    background: rgba(239, 68, 68, 0.10);
     border: 1px solid rgba(239, 68, 68, 0.25);
     border-radius: 20px;
     padding: 5px 10px;
@@ -215,26 +215,26 @@ footer {
 }
 
 [data-testid="stMetric"] {
-    background-color: #14171b;
+    background: #14171b;
     border: 1px solid #292d33;
     border-radius: 12px;
     padding: 15px;
 }
 
 [data-testid="stExpander"] {
-    background-color: #121519;
+    background: #121519;
     border: 1px solid #292d33;
     border-radius: 12px;
 }
 
 [data-testid="stChatInput"] {
-    background-color: #171a1f;
+    background: #171a1f;
     border: 1px solid #34383f;
     border-radius: 18px;
 }
 
 .stButton > button {
-    background-color: #171a1f;
+    background: #171a1f;
     color: #d8dadd;
     border: 1px solid #30343a;
     border-radius: 11px;
@@ -245,7 +245,7 @@ footer {
 .stButton > button:hover {
     border-color: #4da3ff;
     color: #ffffff;
-    background-color: #1c2026;
+    background: #1c2026;
 }
 
 </style>
@@ -255,7 +255,7 @@ footer {
 
 
 # ============================================================
-# API CONFIGURATION
+# API CONFIG
 # ============================================================
 
 API_KEY = st.secrets["TWELVE_DATA_API_KEY"]
@@ -264,9 +264,7 @@ td = TDClient(
     apikey=API_KEY
 )
 
-IST = ZoneInfo(
-    "Asia/Kolkata"
-)
+IST = ZoneInfo("Asia/Kolkata")
 
 
 # ============================================================
@@ -280,15 +278,11 @@ def get_data_status(data):
     last_candle = data.index[-1]
 
     if last_candle.tzinfo is None:
-        last_candle = last_candle.replace(
-            tzinfo=IST
-        )
+        last_candle = last_candle.replace(tzinfo=IST)
 
     age = now_ist - last_candle
 
-    age_minutes = (
-        age.total_seconds() / 60
-    )
+    age_minutes = age.total_seconds() / 60
 
     weekday = now_ist.weekday()
 
@@ -317,7 +311,7 @@ def get_data_status(data):
 
 
 # ============================================================
-# QUANTITATIVE ENGINE
+# QUANT ENGINE
 # ============================================================
 
 def analyze_xauusd():
@@ -381,13 +375,9 @@ def analyze_xauusd():
 
     delta = data["Close"].diff()
 
-    gain = delta.clip(
-        lower=0
-    )
+    gain = delta.clip(lower=0)
 
-    loss = -delta.clip(
-        upper=0
-    )
+    loss = -delta.clip(upper=0)
 
     average_gain = (
         gain
@@ -401,11 +391,7 @@ def analyze_xauusd():
         .mean()
     )
 
-    rs = (
-        average_gain
-        /
-        average_loss
-    )
+    rs = average_gain / average_loss
 
     data["RSI"] = (
         100
@@ -614,7 +600,7 @@ def analyze_xauusd():
 
 
     # ========================================================
-    # STRATEGY SIGNAL
+    # SIGNAL
     # ========================================================
 
     if score >= 60:
@@ -639,16 +625,12 @@ def analyze_xauusd():
 
 
     # ========================================================
-    # ATR MODEL LEVELS
+    # MODEL LEVELS
     # ========================================================
 
-    entry = float(
-        latest["Close"]
-    )
+    entry = float(latest["Close"])
 
-    atr = float(
-        latest["ATR"]
-    )
+    atr = float(latest["ATR"])
 
 
     if decision in [
@@ -656,23 +638,11 @@ def analyze_xauusd():
         "STRONG BUY"
     ]:
 
-        stop_loss = (
-            entry
-            -
-            (1.5 * atr)
-        )
+        stop_loss = entry - (1.5 * atr)
 
-        target_1 = (
-            entry
-            +
-            (1.5 * atr)
-        )
+        target_1 = entry + (1.5 * atr)
 
-        target_2 = (
-            entry
-            +
-            (3 * atr)
-        )
+        target_2 = entry + (3 * atr)
 
 
     elif decision in [
@@ -680,23 +650,11 @@ def analyze_xauusd():
         "STRONG SELL"
     ]:
 
-        stop_loss = (
-            entry
-            +
-            (1.5 * atr)
-        )
+        stop_loss = entry + (1.5 * atr)
 
-        target_1 = (
-            entry
-            -
-            (1.5 * atr)
-        )
+        target_1 = entry - (1.5 * atr)
 
-        target_2 = (
-            entry
-            -
-            (3 * atr)
-        )
+        target_2 = entry - (3 * atr)
 
 
     else:
@@ -708,9 +666,7 @@ def analyze_xauusd():
         target_2 = None
 
 
-    market = get_data_status(
-        data
-    )
+    market = get_data_status(data)
 
 
     return {
@@ -728,7 +684,7 @@ def analyze_xauusd():
 
 
 # ============================================================
-# DISPLAY MODEL ANALYSIS
+# DISPLAY ANALYSIS
 # ============================================================
 
 def display_analysis(result):
@@ -773,6 +729,10 @@ def display_analysis(result):
     )
 
 
+    # ========================================================
+    # MARKET CLOSED
+    # ========================================================
+
     if not market["active"]:
 
         market_html = f"""
@@ -784,7 +744,8 @@ Market Status: <b>{market["status"]}</b>
 Last Available Candle: {market["last_candle"]}
 <br><br>
 QuantEdge is displaying the latest available quantitative analysis.
-No active model entry, stop, or target levels are displayed while fresh market data is unavailable.
+<br><br>
+No active entry reference, stop level, or targets are displayed while fresh market data is unavailable.
 </div>
 """
 
@@ -794,13 +755,18 @@ No active model entry, stop, or target levels are displayed while fresh market d
         )
 
 
+    # ========================================================
+    # WAIT
+    # ========================================================
+
     elif decision == "WAIT":
 
         wait_html = """
 <div class="market-message">
 <b>No valid quantitative setup.</b>
 <br><br>
-The current indicators have mixed confirmation.
+The indicators currently have mixed confirmation.
+<br><br>
 QuantEdge is waiting for stronger alignment between trend and momentum indicators.
 </div>
 """
@@ -810,6 +776,10 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
             unsafe_allow_html=True
         )
 
+
+    # ========================================================
+    # ACTIVE MODEL LEVELS
+    # ========================================================
 
     else:
 
@@ -823,80 +793,78 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
 
         with col1:
 
-            entry_html = f"""
+            st.markdown(
+                f"""
 <div class="level-card">
 <div class="level-title">Entry Reference</div>
 <div class="level-value">{result["entry"]:.2f}</div>
 </div>
-"""
-
-            st.markdown(
-                entry_html,
+""",
                 unsafe_allow_html=True
             )
 
 
         with col2:
 
-            stop_html = f"""
+            st.markdown(
+                f"""
 <div class="level-card">
 <div class="level-title">Stop Level</div>
 <div class="level-value">{result["stop_loss"]:.2f}</div>
 </div>
-"""
-
-            st.markdown(
-                stop_html,
+""",
                 unsafe_allow_html=True
             )
 
 
         with col3:
 
-            target1_html = f"""
+            st.markdown(
+                f"""
 <div class="level-card">
 <div class="level-title">Target 1</div>
 <div class="level-value">{result["target_1"]:.2f}</div>
 </div>
-"""
-
-            st.markdown(
-                target1_html,
+""",
                 unsafe_allow_html=True
             )
 
 
         with col4:
 
-            target2_html = f"""
+            st.markdown(
+                f"""
 <div class="level-card">
 <div class="level-title">Target 2</div>
 <div class="level-value">{result["target_2"]:.2f}</div>
 </div>
-"""
-
-            st.markdown(
-                target2_html,
+""",
                 unsafe_allow_html=True
             )
 
+
+    # ========================================================
+    # REASONING
+    # ========================================================
 
     st.markdown(
         "### Model Reasoning"
     )
 
 
-    for reason in result["reasons"]:
-
-        reason_html = f"""
-<div class="reason-card">{reason}</div>
-"""
+    for reason_index, reason in enumerate(result["reasons"]):
 
         st.markdown(
-            reason_html,
+            f"""
+<div class="reason-card">{reason}</div>
+""",
             unsafe_allow_html=True
         )
 
+
+    # ========================================================
+    # METRICS
+    # ========================================================
 
     with st.expander(
         "View Market Metrics"
@@ -929,6 +897,10 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
         )
 
 
+    # ========================================================
+    # CHART
+    # ========================================================
+
     with st.expander(
         "Open XAU/USD Chart"
     ):
@@ -946,7 +918,8 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
             go.Scatter(
                 x=chart_data.index,
                 y=chart_data["Close"],
-                name="XAU/USD"
+                name="XAU/USD",
+                mode="lines"
             )
         )
 
@@ -955,7 +928,8 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
             go.Scatter(
                 x=chart_data.index,
                 y=chart_data["EMA20"],
-                name="EMA 20"
+                name="EMA 20",
+                mode="lines"
             )
         )
 
@@ -964,7 +938,8 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
             go.Scatter(
                 x=chart_data.index,
                 y=chart_data["EMA50"],
-                name="EMA 50"
+                name="EMA 50",
+                mode="lines"
             )
         )
 
@@ -975,6 +950,8 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
             paper_bgcolor="#121519",
             plot_bgcolor="#121519",
             hovermode="x unified",
+            xaxis_title="Time",
+            yaxis_title="XAU/USD",
             margin=dict(
                 l=20,
                 r=20,
@@ -986,7 +963,8 @@ QuantEdge is waiting for stronger alignment between trend and momentum indicator
 
         st.plotly_chart(
             fig,
-            use_container_width=True
+            use_container_width=True,
+            key="latest_xauusd_analysis_chart"
         )
 
 
@@ -999,33 +977,35 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 
+if "result" not in st.session_state:
+
+    st.session_state.result = None
+
+
 # ============================================================
 # SIDEBAR
 # ============================================================
 
 with st.sidebar:
 
-    sidebar_logo = """
+    st.markdown(
+        """
 <div class="quant-logo">Quant<span>Edge</span></div>
 <div class="quant-subtitle">XAU/USD Quant Research</div>
-"""
-
-    st.markdown(
-        sidebar_logo,
+""",
         unsafe_allow_html=True
     )
 
 
     if st.button(
         "+ New Analysis",
-        use_container_width=True
+        use_container_width=True,
+        key="new_analysis_button"
     ):
 
         st.session_state.messages = []
 
-        if "result" in st.session_state:
-
-            del st.session_state.result
+        st.session_state.result = None
 
         st.rerun()
 
@@ -1104,43 +1084,41 @@ with st.sidebar:
 # HEADER
 # ============================================================
 
-header_html = """
+st.markdown(
+    """
 <div class="app-header">
 <div class="app-title">QuantEdge AI</div>
-<div class="app-subtitle">Explainable quantitative analysis for XAU/USD</div>
+<div class="app-subtitle">Explainable quantitative analysis for XAU/USD Spot Gold</div>
 </div>
-"""
-
-st.markdown(
-    header_html,
+""",
     unsafe_allow_html=True
 )
 
 
 # ============================================================
-# DEFAULT QUICK PROMPTS
+# QUICK PROMPTS
 # ============================================================
 
 buy_prompt = False
+
 trend_prompt = False
+
 strategy_prompt = False
 
 
 # ============================================================
-# WELCOME SCREEN
+# WELCOME
 # ============================================================
 
 if len(st.session_state.messages) == 0:
 
-    welcome_html = """
+    st.markdown(
+        """
 <div class="welcome">
 <div class="welcome-title">How can I help with Gold?</div>
-<div class="welcome-text">Ask QuantEdge to analyze XAU/USD market conditions.</div>
+<div class="welcome-text">Ask QuantEdge to analyze current XAU/USD market conditions.</div>
 </div>
-"""
-
-    st.markdown(
-        welcome_html,
+""",
         unsafe_allow_html=True
     )
 
@@ -1152,15 +1130,17 @@ if len(st.session_state.messages) == 0:
 
         buy_prompt = st.button(
             "BUY, SELL or WAIT?",
-            use_container_width=True
+            use_container_width=True,
+            key="buy_sell_prompt"
         )
 
 
     with col2:
 
         trend_prompt = st.button(
-            "Explain Gold trend",
-            use_container_width=True
+            "Explain Gold Trend",
+            use_container_width=True,
+            key="trend_prompt"
         )
 
 
@@ -1168,15 +1148,45 @@ if len(st.session_state.messages) == 0:
 
         strategy_prompt = st.button(
             "Run Quant Analysis",
-            use_container_width=True
+            use_container_width=True,
+            key="quant_prompt"
         )
+
+
+# ============================================================
+# FIND LATEST ANALYSIS MESSAGE
+# ============================================================
+
+analysis_message_indexes = [
+    index
+    for index, message in enumerate(
+        st.session_state.messages
+    )
+    if (
+        message["role"] == "assistant"
+        and
+        message.get(
+            "show_analysis",
+            False
+        )
+    )
+]
+
+
+latest_analysis_index = (
+    analysis_message_indexes[-1]
+    if analysis_message_indexes
+    else None
+)
 
 
 # ============================================================
 # DISPLAY CHAT HISTORY
 # ============================================================
 
-for message in st.session_state.messages:
+for index, message in enumerate(
+    st.session_state.messages
+):
 
     with st.chat_message(
         message["role"]
@@ -1188,14 +1198,9 @@ for message in st.session_state.messages:
 
 
         if (
-            message["role"] == "assistant"
+            index == latest_analysis_index
             and
-            message.get(
-                "show_analysis",
-                False
-            )
-            and
-            "result" in st.session_state
+            st.session_state.result is not None
         ):
 
             display_analysis(
@@ -1215,7 +1220,7 @@ user_question = st.chat_input(
 if buy_prompt:
 
     user_question = (
-        "Should the model signal BUY, SELL or WAIT?"
+        "Should the quantitative model signal BUY, SELL or WAIT?"
     )
 
 
@@ -1234,7 +1239,7 @@ elif strategy_prompt:
 
 
 # ============================================================
-# PROCESS USER QUESTION
+# PROCESS QUESTION
 # ============================================================
 
 if user_question:
@@ -1271,9 +1276,9 @@ The market status is **{market["status"]}**.
 
 The latest quantitative model signal is **{result["decision"]}** with a Quant Score of **{result["score"]}/100**.
 
-Because fresh market data is currently unavailable, QuantEdge is not displaying active model entry, stop, or target levels.
+Because fresh market data is unavailable, QuantEdge is not displaying active entry, stop, or target levels.
 
-The latest indicator reasoning is shown below.
+The latest quantitative reasoning is shown below.
 """
 
 
@@ -1284,11 +1289,11 @@ I analyzed the latest **XAU/USD 15-minute market data**.
 
 The current quantitative model signal is **WAIT**.
 
-The Quant Score is **{result["score"]}/100**.
+Quant Score: **{result["score"]}/100**
 
-The indicators currently have mixed confirmation. The strategy is waiting for stronger trend and momentum alignment before generating a BUY or SELL setup.
+The indicators currently have mixed confirmation.
 
-The model reasoning is shown below.
+The model is waiting for stronger trend and momentum alignment before generating a BUY or SELL setup.
 """
 
 
@@ -1299,11 +1304,11 @@ I analyzed the latest **XAU/USD 15-minute market data**.
 
 The quantitative model signal is **{result["decision"]}**.
 
-The Quant Score is **{result["score"]}/100**.
+Quant Score: **{result["score"]}/100**
 
-The model has generated ATR-based research levels from the latest market volatility and quantitative indicator confirmation.
+The model generated ATR-based research levels using the latest XAU/USD volatility and indicator confirmation.
 
-The complete strategy analysis is shown below.
+The complete quantitative analysis is shown below.
 """
 
 
@@ -1344,7 +1349,7 @@ The complete strategy analysis is shown below.
 st.markdown("---")
 
 st.caption(
-    "QuantEdge is an educational quantitative strategy "
-    "research system. Model signals and ATR-based levels "
-    "are analytical outputs and are not guaranteed market outcomes."
+    "QuantEdge is an educational quantitative strategy research "
+    "system. Model signals and ATR-based levels are analytical "
+    "outputs and are not guaranteed market outcomes."
 )
